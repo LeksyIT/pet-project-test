@@ -1,5 +1,6 @@
 package com.leksyit.productservice.controller;
 
+
 import com.leksyit.productservice.dto.ProductDto;
 import com.leksyit.productservice.entity.Product;
 import com.leksyit.productservice.service.impl.ProductServiceImpl;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ProductsController {
 
     private final ProductServiceImpl productsService;
+    private final UserController userController;
 
     private static final String PRODUCT = "product";
     private static final String PRODUCTS = "products";
@@ -38,6 +40,8 @@ public class ProductsController {
         Page<Product> modelsPages = productsService.getProductWithPagingAndFiltering(specification, pageable);
         List<ProductDto> productList = productsService.getListProductsFromPageable(specification, pageable);
 
+        String login = userController.getLogin();
+
         model.addAttribute(PRODUCTS, productList);
         model.addAttribute(PRODUCT, productDto);
         model.addAttribute("word", word);
@@ -45,7 +49,7 @@ public class ProductsController {
         model.addAttribute("maxPrice", maxPrice);
         model.addAttribute("currentPage", pageable.getPageNumber());
         model.addAttribute("pageNumbers", productsService.preparePageInt(pageable.getPageNumber(), modelsPages.getTotalPages()));
-
+        model.addAttribute("login", login);
         return PRODUCTS;
     }
 
@@ -64,14 +68,14 @@ public class ProductsController {
         return "product-page";
     }
 
-//    @Secured(value="ROLE_ADMIN")
+    //    @Secured(value="ROLE_ADMIN")
     @GetMapping("/delete/{id}")
     public String deleteStudent(@PathVariable(value = ID) Long id) {
         productsService.deleteProduct(id);
         return REDIRECT_PRODUCTS;
     }
 
-//    @Secured(value="ROLE_ADMIN")
+    //    @Secured(value="ROLE_ADMIN")
     @PostMapping("/edit/{id}")
     public String updateStudent(@PathVariable(value = ID) Long id,
                                 @ModelAttribute(value = PRODUCT) ProductDto productDto,
@@ -82,7 +86,7 @@ public class ProductsController {
         return REDIRECT_PRODUCTS;
     }
 
-//    @Secured(value="ROLE_ADMIN")
+    //    @Secured(value="ROLE_ADMIN")
     @GetMapping("/edit/{id}")
     public String openUpdateStudentPage(@PathVariable(value = ID) Long id,
                                         Model model) {
